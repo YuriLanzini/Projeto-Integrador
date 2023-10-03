@@ -12,5 +12,4 @@ Este repositório é dedicado ao Projeto Integrador e está organizado em pastas
   Arquivos:
    -trabalho_integrador.pdf
 
-- **Prog II**: 
-  Arquivos:
+
