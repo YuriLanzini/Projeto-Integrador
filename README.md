@@ -7,9 +7,13 @@ Este repositório é dedicado ao Projeto Integrador e está organizado em pastas
 - **Banco de dados**: 
   Arquivos:
    -Requisitos.pdf
+   -Banco_I.brM3
+   -ModeloConceitual.png
+   -ModeloLógico.png
 
 - **Engenharia**: 
   Arquivos:
    -trabalho_integrador.pdf
+   -trabalho_integrador_2.pdf
 
 
