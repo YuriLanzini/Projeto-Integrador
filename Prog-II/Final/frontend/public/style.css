@@ -1,0 +1,31 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    /* background: linear-gradient(to top, hsl(213, 91%, 69%), hsl(210, 10%, 96%)); */
+    background-size: auto;
+    background-repeat: no-repeat;
+    color: #fff;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    
+    
+}
+
+header {
+    background: linear-gradient(to left, hsl(213, 96%, 10%), hsl(213, 96%, 30%));
+    color: #fff;
+    text-align: center;
+    padding: 30px;
+    /* Adiciona bordas arredondadas e sombra */
+    border-radius: 8px; /* Altere conforme necessário */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 2); /* Adiciona uma sombra suave */
+  
+}
+
