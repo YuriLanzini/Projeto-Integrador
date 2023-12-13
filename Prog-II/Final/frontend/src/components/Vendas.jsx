@@ -70,7 +70,7 @@ const Vendas = () => {
       align: "center",
     },
     {
-      field: "quantidade",
+      field: "quantidadeprodutos",
       headerName: "Quantidade",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",

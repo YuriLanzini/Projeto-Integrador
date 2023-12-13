@@ -24,7 +24,7 @@ const TelaAdm = ({ onLogout }) => {
   const [pedidos, setPedidos] = useState([]);
   const location = useLocation();
   const clienteInfo = location.state?.clienteInfo;
-  const getRowId = (row) => `${row.id}-${row.nome}${row.total}`;
+  const getRowId = (row) => `${row.id}-${row.nome}${row.valor}`;
   const getRowId1 = (row) => `${row.marca}-${row.quantidade}-${row.categoria}`;
   const navigate = useNavigate();
   const [admAberto, setAdmAberto] = useState(false);
@@ -156,8 +156,8 @@ const TelaAdm = ({ onLogout }) => {
     },
 
     {
-      field: "total",
-      headerName: "Valor Total",
+      field: "valor",
+      headerName: "Valor",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       flex: 1,
@@ -184,7 +184,7 @@ const TelaAdm = ({ onLogout }) => {
       align: "center",
     },
     {
-      field: "categoria",
+      field: "nome",
       headerName: "Categoria",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",

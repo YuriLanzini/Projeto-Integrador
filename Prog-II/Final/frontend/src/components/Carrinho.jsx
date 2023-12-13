@@ -83,13 +83,12 @@ const Carrinho = ({ cart, bebidas, clienteInfo, setCart, onClose, open }) => {
       const pedidos = cart.map((item, index) => ({
         CPF: clienteInfo.cpf,
         CodigoProduto: item.codigoproduto,
-        Quantidade: quantidades[index] || 1,
         Valor: item.precovenda * (quantidades[index] || 1),
         Total: calcularTotal(),
         Finalizado: false,
       }));
 
-      const responses = await Promise.all(
+      const inserirPedidos = await Promise.all(
         pedidos.map(async (pedido) => {
           const response = await axios.post(
             "http://localhost:3020/pedido",
@@ -98,6 +97,23 @@ const Carrinho = ({ cart, bebidas, clienteInfo, setCart, onClose, open }) => {
           return response.data;
         })
       );
+
+      const ItensProdutos = inserirPedidos.map((pedido, index) => ({
+        PedidoID: pedido.id,
+        CodigoProduto: pedido.codigoproduto,
+        QuantidadeProdutos: quantidades[index] || 1,
+      }));
+
+      const insertedItensProdutos = await Promise.all(
+        ItensProdutos.map(async (produto) => {
+          const response = await axios.post(
+            "http://localhost:3020/itemproduto",
+            produto
+          );
+          return response.data;
+        })
+      );
+
       navigate("/pedido", { state: { clienteInfo } });
     } catch (error) {
       console.error("Erro ao enviar pedido:", error);

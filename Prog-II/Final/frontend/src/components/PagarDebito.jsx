@@ -197,7 +197,7 @@ const PagarDebito = () => {
             </Select>
           </FormControl>
 
-          <p>Total da compra: R$ {TotalCompra()}</p>
+          <p>Total da Dívida: R$ {TotalCompra()}</p>
           <Button variant="contained" onClick={handleFinalizarCompra}>
             Finalizar Compra
           </Button>

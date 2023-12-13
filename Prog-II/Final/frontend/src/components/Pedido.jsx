@@ -16,6 +16,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const PedidosComponent = () => {
   const [pedidos, setPedidos] = useState([]);
+  const [ItensProdutos, setItensProdutos] = useState([]);
   const [Bebidas, setBebidas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,8 +29,8 @@ const PedidosComponent = () => {
   const clienteInfo = location.state?.clienteInfo;
   const navigate = useNavigate();
   const moment = require("moment");
-
-  const getRowId = (row) => `${row.marca}-${row.quantidade}-${row.valor}`;
+  const getRowId = (row) =>
+    `${row.marca}-${row.quantidadeprodutos}-${row.valor}`;
 
   const fetchPedidoList = async () => {
     try {
@@ -38,6 +39,18 @@ const PedidosComponent = () => {
       setPedidos(response.data);
     } catch (error) {
       setError("Erro ao carregar a lista de pedidos");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchItensProdutosList = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("http://localhost:3020/itensprodutos");
+      setItensProdutos(response.data);
+    } catch (error) {
+      setError("Erro ao carregar a lista de itens produtos");
     } finally {
       setLoading(false);
     }
@@ -54,6 +67,12 @@ const PedidosComponent = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchPedidoList();
+    fetchBebidaList();
+    fetchItensProdutosList();
+  }, []);
 
   const TotalCompra = () => {
     let totalValue = pedidos.reduce((total, pedido) => {
@@ -75,14 +94,14 @@ const PedidosComponent = () => {
         Finalizado: true,
       });
 
-      pedidos.map(async (pedido) => {
+      ItensProdutos.map(async (produto) => {
         const bebidaCorrespondente = Bebidas.find(
-          (bebida) => bebida.codigoproduto === pedido.codigoproduto
+          (bebida) => bebida.codigoproduto === produto.codigoproduto
         );
 
-        if (bebidaCorrespondente) {
+        if (bebidaCorrespondente.quantidade > 0 && bebidaCorrespondente) {
           const novaQuantidadeBebida =
-            bebidaCorrespondente.quantidade - pedido.quantidade;
+            bebidaCorrespondente.quantidade - produto.quantidadeprodutos;
 
           await axios.put(
             `http://localhost:3020/atualizarBebida/${bebidaCorrespondente.codigoproduto}`,
@@ -119,11 +138,6 @@ const PedidosComponent = () => {
     }
   };
 
-  useEffect(() => {
-    fetchPedidoList();
-    fetchBebidaList();
-  }, []);
-
   const handleMetodoPagamentoChange = (event) => {
     setMetodoPagamento(event.target.value);
   };
@@ -158,7 +172,7 @@ const PedidosComponent = () => {
       align: "center",
     },
     {
-      field: "quantidade",
+      field: "quantidadeprodutos",
       headerName: "Quantidade",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
@@ -228,7 +242,11 @@ const PedidosComponent = () => {
           </FormControl>
 
           <p>Total da compra: R$ {TotalCompra()}</p>
-          <Button style={{ marginBottom: '20px' }}variant="contained" onClick={handleFinalizarCompra}>
+          <Button
+            style={{ marginBottom: "20px" }}
+            variant="contained"
+            onClick={handleFinalizarCompra}
+          >
             Finalizar Compra
           </Button>
         </div>

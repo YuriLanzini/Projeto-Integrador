@@ -214,7 +214,7 @@ app.get("/bebidas", async (req, res) => {
 app.get("/estoquebaixo", async (req, res) => {
   try {
     const bebidas = await db.any(
-      "SELECT * FROM Produtos WHERE Quantidade < 5;"
+      "SELECT p.marca, p.quantidade, c.nome FROM Produtos p JOIN Categorias c ON C.ID=P.CategoriaID WHERE Quantidade < 5;"
     );
 
     console.log("Retornando todos bebidas.");
@@ -228,7 +228,7 @@ app.get("/estoquebaixo", async (req, res) => {
 app.get("/pedidos", async (req, res) => {
   try {
     const pedidos = await db.any(
-      "SELECT u.nome, p.cpf ,b.marca, p.valor, p.total, p.quantidade, p.codigoproduto  FROM Pedidos p JOIN Produtos b ON p.codigoproduto=b.codigoproduto JOIN Usuarios u ON u.cpf=p.cpf WHERE Finalizado='false';"
+      "SELECT u.nome, p.cpf ,b.marca, p.valor, p.total, i.quantidadeprodutos, p.codigoproduto  FROM Pedidos p JOIN Produtos b ON p.codigoproduto=b.codigoproduto JOIN Usuarios u ON u.cpf=p.cpf JOIN ItensProdutos i ON  i.PedidoID=p.ID WHERE Finalizado='false' ORDER BY p.id;"
     );
 
     console.log("Retornando todos pedidos.");
@@ -242,7 +242,7 @@ app.get("/pedidos", async (req, res) => {
 app.get("/pedidosAdm", async (req, res) => {
   try {
     const pedidos = await db.any(
-      "SELECT DISTINCT ON (p.id) p.id, p.cpf, p.total, u.nome, p.quantidade, b.marca, p.valor FROM Pedidos p JOIN Produtos b ON p.codigoproduto=b.codigoproduto JOIN Usuarios u ON u.cpf=p.cpf WHERE Finalizado='true' ORDER BY p.id, p.total; "
+      "SELECT p.id, p.cpf, p.total, u.nome, i.quantidadeprodutos, b.marca, p.valor FROM Pedidos p JOIN Produtos b ON p.codigoproduto=b.codigoproduto JOIN Usuarios u ON u.cpf=p.cpf JOIN ItensProdutos i ON  i.PedidoID=p.ID WHERE Finalizado='true' ORDER BY p.id, p.total; "
     );
 
     console.log("Retornando todos pedidos.");
@@ -253,10 +253,22 @@ app.get("/pedidosAdm", async (req, res) => {
   }
 });
 
+app.get("/itensprodutos", async (req, res) => {
+  try {
+    const item = await db.any("SELECT * FROM ItensProdutos; ");
+
+    console.log("Retornando todos itens.");
+    res.json(item).status(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(400);
+  }
+});
+
 app.get("/venda", async (req, res) => {
   try {
     const pedidos = await db.any(
-      "SELECT p.id, p.cpf, p.total, u.nome, p.quantidade, b.marca, p.valor FROM Pedidos p JOIN Produtos b ON p.codigoproduto=b.codigoproduto JOIN Usuarios u ON u.cpf=p.cpf WHERE Finalizado='true'ORDER BY p.id; "
+      "SELECT p.id, p.cpf, p.total, u.nome, i.quantidadeprodutos, b.marca, p.valor FROM Pedidos p JOIN Produtos b ON p.codigoproduto=b.codigoproduto JOIN Usuarios u ON u.cpf=p.cpf JOIN ItensProdutos i ON  i.PedidoID=p.ID WHERE Finalizado='true'ORDER BY p.id; "
     );
 
     console.log("Retornando todos pedidos.");
@@ -358,17 +370,16 @@ app.post("/produto", async (req, res) => {
 
 app.post("/pedido", async (req, res) => {
   try {
-    const { CPF, CodigoProduto, Quantidade, Valor, Total, Finalizado } =
-      req.body;
-    if (!CPF || !CodigoProduto || !Quantidade || !Valor || !Total) {
+    const { CPF, CodigoProduto, Valor, Total, Finalizado } = req.body;
+    if (!CPF || !CodigoProduto || !Valor || !Total) {
       return res
         .status(500)
         .json({ error: "Todos os dados são obrigatórios." });
     }
 
     const newPedido = await db.one(
-      "INSERT INTO Pedidos (CPF, CodigoProduto, Quantidade, Valor, Total, Finalizado) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;",
-      [CPF, CodigoProduto, Quantidade, Valor, Total, Finalizado]
+      "INSERT INTO Pedidos (CPF, CodigoProduto, Valor, Total, Finalizado) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
+      [CPF, CodigoProduto, Valor, Total, Finalizado]
     );
 
     res.status(201).json(newPedido);
@@ -376,6 +387,29 @@ app.post("/pedido", async (req, res) => {
     console.error(error);
     console.log("aqui");
     res.status(500).json({ error: "Erro ao inserir o pedido." });
+  }
+});
+
+app.post("/itemproduto", async (req, res) => {
+  try {
+    const { PedidoID, CodigoProduto, QuantidadeProdutos } =
+      req.body;
+    if (!PedidoID || !CodigoProduto || !QuantidadeProdutos) {
+      return res
+        .status(500)
+        .json({ error: "Todos os dados são obrigatórios." });
+    }
+
+    const newItem = await db.one(
+      "INSERT INTO ItensProdutos (PedidoID, CodigoProduto, QuantidadeProdutos) VALUES ($1, $2, $3) RETURNING *;",
+      [PedidoID, CodigoProduto, QuantidadeProdutos]
+    );
+
+    res.status(201).json(newItem);
+  } catch (error) {
+    console.error(error);
+    console.log("aqui");
+    res.status(500).json({ error: "Erro ao inserir o item." });
   }
 });
 
@@ -446,7 +480,7 @@ app.put("/atualizarBebida/:codigoproduto", async (req, res) => {
 
 app.put("/finalizar", async (req, res) => {
   try {
-    const { Finalizado } = req.body;
+    const { Finalizado, FinalizadoItens } = req.body;
 
     await db.oneOrNone("UPDATE Pedidos SET Finalizado = $1;", [Finalizado]);
 

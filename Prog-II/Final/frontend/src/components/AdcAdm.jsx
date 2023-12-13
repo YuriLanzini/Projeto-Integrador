@@ -41,7 +41,7 @@ const AdmForm = ({ updateAdmList, open, onClose }) => {
     if (numeroLimpo.length >= 2) {
       numeroFormatado = `(${numeroLimpo.slice(0, 2)}`;
       if (numeroLimpo.length > 2) {
-        numeroFormatado += `) ${numeroLimpo.slice(2,11)}`;
+        numeroFormatado += `) ${numeroLimpo.slice(2, 11)}`;
       }
     }
 

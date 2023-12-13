@@ -35,9 +35,9 @@ function App() {
     setUserRole(null);
   };
 
-  useEffect(() => {
-    handleLogin();
-  }, []); 
+  // useEffect(() => {
+  //   handleLogin();
+  // }, []); 
   
 
   const isUserAdmin = () => {
