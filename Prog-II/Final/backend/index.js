@@ -228,7 +228,7 @@ app.get("/estoquebaixo", async (req, res) => {
 app.get("/pedidos", async (req, res) => {
   try {
     const pedidos = await db.any(
-      "SELECT u.nome, p.cpf ,b.marca, p.valor, p.total, i.quantidadeprodutos, p.codigoproduto  FROM Pedidos p JOIN Produtos b ON p.codigoproduto=b.codigoproduto JOIN Usuarios u ON u.cpf=p.cpf JOIN ItensProdutos i ON  i.PedidoID=p.ID WHERE Finalizado='false' ORDER BY p.id;"
+      "SELECT u.nome, p.cpf ,b.marca, i.valor, p.total, i.quantidadeprodutos, i.codigoproduto  FROM ItensProdutos i JOIN Produtos b ON i.codigoproduto=b.codigoproduto JOIN Pedidos p ON  i.PedidoID=p.ID JOIN Usuarios u ON u.cpf=p.cpf   WHERE p.Finalizado='false' ORDER BY p.id;"
     );
 
     console.log("Retornando todos pedidos.");
@@ -242,7 +242,7 @@ app.get("/pedidos", async (req, res) => {
 app.get("/pedidosAdm", async (req, res) => {
   try {
     const pedidos = await db.any(
-      "SELECT p.id, p.cpf, p.total, u.nome, i.quantidadeprodutos, b.marca, p.valor FROM Pedidos p JOIN Produtos b ON p.codigoproduto=b.codigoproduto JOIN Usuarios u ON u.cpf=p.cpf JOIN ItensProdutos i ON  i.PedidoID=p.ID WHERE Finalizado='true' ORDER BY p.id, p.total; "
+      "SELECT p.id, u.nome, p.total FROM Pedidos p JOIN Usuarios u ON u.cpf=p.cpf  WHERE p.Finalizado='true' ORDER BY p.id; "
     );
 
     console.log("Retornando todos pedidos.");
@@ -268,7 +268,7 @@ app.get("/itensprodutos", async (req, res) => {
 app.get("/venda", async (req, res) => {
   try {
     const pedidos = await db.any(
-      "SELECT p.id, p.cpf, p.total, u.nome, i.quantidadeprodutos, b.marca, p.valor FROM Pedidos p JOIN Produtos b ON p.codigoproduto=b.codigoproduto JOIN Usuarios u ON u.cpf=p.cpf JOIN ItensProdutos i ON  i.PedidoID=p.ID WHERE Finalizado='true'ORDER BY p.id; "
+      "SELECT p.id, u.nome, p.cpf ,b.marca, i.valor, p.total, i.quantidadeprodutos FROM ItensProdutos i JOIN Produtos b ON i.codigoproduto=b.codigoproduto JOIN Pedidos p ON  i.PedidoID=p.ID JOIN Usuarios u ON u.cpf=p.cpf   WHERE p.Finalizado='true' ORDER BY p.id;"
     );
 
     console.log("Retornando todos pedidos.");
@@ -370,16 +370,16 @@ app.post("/produto", async (req, res) => {
 
 app.post("/pedido", async (req, res) => {
   try {
-    const { CPF, CodigoProduto, Valor, Total, Finalizado } = req.body;
-    if (!CPF || !CodigoProduto || !Valor || !Total) {
+    const {ID, CPF, Total, Finalizado } = req.body;
+    if (!ID || !CPF || !Total) {
       return res
         .status(500)
         .json({ error: "Todos os dados são obrigatórios." });
     }
 
     const newPedido = await db.one(
-      "INSERT INTO Pedidos (CPF, CodigoProduto, Valor, Total, Finalizado) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
-      [CPF, CodigoProduto, Valor, Total, Finalizado]
+      "INSERT INTO Pedidos (ID, CPF, Total, Finalizado) VALUES ($1, $2, $3, $4) RETURNING *;",
+      [ID, CPF, Total, Finalizado]
     );
 
     res.status(201).json(newPedido);
@@ -392,17 +392,16 @@ app.post("/pedido", async (req, res) => {
 
 app.post("/itemproduto", async (req, res) => {
   try {
-    const { PedidoID, CodigoProduto, QuantidadeProdutos } =
-      req.body;
-    if (!PedidoID || !CodigoProduto || !QuantidadeProdutos) {
+    const { PedidoID, CodigoProduto, QuantidadeProdutos, Valor } = req.body;
+    if (!PedidoID || !CodigoProduto || !QuantidadeProdutos || !Valor) {
       return res
         .status(500)
         .json({ error: "Todos os dados são obrigatórios." });
     }
 
     const newItem = await db.one(
-      "INSERT INTO ItensProdutos (PedidoID, CodigoProduto, QuantidadeProdutos) VALUES ($1, $2, $3) RETURNING *;",
-      [PedidoID, CodigoProduto, QuantidadeProdutos]
+      "INSERT INTO ItensProdutos (PedidoID, CodigoProduto, QuantidadeProdutos, Valor) VALUES ($1, $2, $3, $4) RETURNING *;",
+      [PedidoID, CodigoProduto, QuantidadeProdutos, Valor]
     );
 
     res.status(201).json(newItem);

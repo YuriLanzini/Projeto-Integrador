@@ -1,33 +1,28 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Button } from "@mui/material";
 
-const NotaFiscal = ({
-  onClose,
-  totalValor,
-  pedidoDetalhes,
-  clienteInfo,
-  metodoPagamento,
-}) => {
+const NotaFiscal = ({ onClose, totalValor, clienteInfo, metodoPagamento }) => {
   const [currentDate] = useState(new Date());
   const [notaFiscalItems, setNotaFiscalItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const buildNotaFiscalItems = () => {
-    const items = [];
-
-    pedidoDetalhes.forEach((pedido) => {
-      items.push({
-        marca: pedido.marca,
-        valor: pedido.valor,
-        quantidade: pedido.quantidade,
-      });
-    });
-
-    setNotaFiscalItems(items);
+  const fetchPedidoList = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("http://localhost:3020/pedidos");
+      setNotaFiscalItems(response.data);
+    } catch (error) {
+      setError("Erro ao carregar a lista de pedidos");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    buildNotaFiscalItems();
-  }, [pedidoDetalhes]);
+    fetchPedidoList();
+  }, []);
 
   return (
     <div
@@ -57,7 +52,7 @@ const NotaFiscal = ({
         {notaFiscalItems.map((item, index) => (
           <li key={index}>
             <strong>Marca:</strong> {item.marca} | <strong>Valor:</strong> R${" "}
-            {item.valor} | <strong>Quant.:</strong> {item.quantidade}
+            {item.valor} | <strong>Quant.:</strong> {item.quantidadeprodutos}
           </li>
         ))}
       </ul>

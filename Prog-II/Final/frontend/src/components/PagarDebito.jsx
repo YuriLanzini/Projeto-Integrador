@@ -9,7 +9,7 @@ import {
   Paper,
   Alert,
   Snackbar,
-  Box
+  Box,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import NotaFiscalDebito from "./NotaFiscalDebito";
@@ -37,7 +37,7 @@ const PagarDebito = () => {
         `http://localhost:3020/pagardebito/${clienteInfo.cpf}`,
         {}
       );
-      
+
       setContasPendentes(response.data);
     } catch (error) {
       setError("Erro ao carregar a lista de pedidos");
@@ -45,6 +45,10 @@ const PagarDebito = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchContasDebitoList();
+  }, []);
 
   const TotalCompra = () => {
     let totalValue = ContasPendentes.reduce((total, conta) => {
@@ -79,10 +83,6 @@ const PagarDebito = () => {
       setOpenMessage(true);
     }
   };
-
-  useEffect(() => {
-    fetchContasDebitoList();
-  }, []);
 
   const handleMetodoPagamentoChange = (event) => {
     setMetodoPagamento(event.target.value);
@@ -140,8 +140,7 @@ const PagarDebito = () => {
 
   return (
     <div>
-
-       <header id="header">
+      <header id="header">
         <Box
           display="flex"
           justifyContent="flex-start"

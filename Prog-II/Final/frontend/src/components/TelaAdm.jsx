@@ -24,7 +24,7 @@ const TelaAdm = ({ onLogout }) => {
   const [pedidos, setPedidos] = useState([]);
   const location = useLocation();
   const clienteInfo = location.state?.clienteInfo;
-  const getRowId = (row) => `${row.id}-${row.nome}${row.valor}`;
+  const getRowId = (row) => `${row.id}-${row.nome}${row.total}`;
   const getRowId1 = (row) => `${row.marca}-${row.quantidade}-${row.categoria}`;
   const navigate = useNavigate();
   const [admAberto, setAdmAberto] = useState(false);
@@ -66,12 +66,6 @@ const TelaAdm = ({ onLogout }) => {
     }
   };
 
-  useEffect(() => {
-    fetchAdmList();
-    fetchProdutoList();
-    fetchEstoBaixoList();
-  }, []);
-
   const fetchPedidoList = async () => {
     try {
       setLoading(true);
@@ -87,6 +81,13 @@ const TelaAdm = ({ onLogout }) => {
     }
   };
 
+  useEffect(() => {
+    fetchAdmList();
+    fetchProdutoList();
+    fetchEstoBaixoList();
+    fetchPedidoList();
+  }, []);
+
   const handleLogoutClick = () => {
     onLogout();
   };
@@ -100,10 +101,6 @@ const TelaAdm = ({ onLogout }) => {
     setProdutoAberto(!ProdutoAberto);
     setAnchorElCadastro(null);
   };
-
-  useEffect(() => {
-    fetchPedidoList();
-  }, []);
 
   const [anchorElCadastro, setAnchorElCadastro] = useState(null);
   const [anchorElRelatorios, setAnchorElRelatorios] = useState(null);
@@ -156,8 +153,8 @@ const TelaAdm = ({ onLogout }) => {
     },
 
     {
-      field: "valor",
-      headerName: "Valor",
+      field: "total",
+      headerName: "Valor Total",
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
       flex: 1,

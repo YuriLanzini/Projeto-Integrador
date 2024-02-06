@@ -43,8 +43,21 @@ const ClientesDebito = () => {
     }
   };
 
+  const fetchDebitoList = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("http://localhost:3020/debitos");
+      setDebitos(response.data);
+    } catch (error) {
+      setError("Erro ao carregar a lista de debitos");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchClienteList();
+    fetchDebitoList();
   }, []);
 
   const formatCPF = (cpf) => {
@@ -59,22 +72,6 @@ const ClientesDebito = () => {
     `${row.cpf}-${row.nome}-${row.valordevido}-${row.datavencimento}-${row.statuspagamento}`;
 
   const getRowId1 = (row) => `${row.cpf}-${row.nome}`;
-
-  const fetchDebitoList = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get("http://localhost:3020/debitos");
-      setDebitos(response.data);
-    } catch (error) {
-      setError("Erro ao carregar a lista de debitos");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDebitoList();
-  }, []);
 
   const coluna = [
     {

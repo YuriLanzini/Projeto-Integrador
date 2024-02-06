@@ -37,8 +37,7 @@ function App() {
 
   // useEffect(() => {
   //   handleLogin();
-  // }, []); 
-  
+  // }, []);
 
   const isUserAdmin = () => {
     return userRole === "Admin";

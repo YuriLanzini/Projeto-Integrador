@@ -20,7 +20,7 @@ const Estoque = () => {
     try {
       setLoading(true);
       const response = await axios.get("http://localhost:3020/bebidas");
-      
+
       setBebidas(response.data);
     } catch (error) {
       setError("Erro ao carregar a lista de bebidas");

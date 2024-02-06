@@ -87,7 +87,7 @@ const ProdutoForm = ({ updateProdutoList, open, onClose }) => {
       setDataValidade("");
       setCategoria("");
       updateProdutoList();
-      setMessageText("Ṕroduto cadastrado com sucesso!");
+      setMessageText("Produto cadastrado com sucesso!");
       setMessageSeverity("success");
       setOpenMessage(true);
     } catch (error) {

@@ -23,10 +23,8 @@ CREATE TABLE Produtos (
 );
 
 CREATE TABLE Pedidos (
-    ID SERIAL PRIMARY KEY,
+    ID INTEGER PRIMARY KEY,
     CPF VARCHAR(14) REFERENCES Usuarios(CPF),
-    CodigoProduto INTEGER REFERENCES Produtos(CodigoProduto),
-    Valor DECIMAL(10, 2),
     Total DECIMAL(10, 2),
     Finalizado BOOLEAN
 );
@@ -34,7 +32,8 @@ CREATE TABLE Pedidos (
 CREATE TABLE ItensProdutos (
     PedidoID INTEGER REFERENCES Pedidos(ID),
     CodigoProduto INTEGER REFERENCES Produtos(CodigoProduto),
-    QuantidadeProdutos INTEGER
+    QuantidadeProdutos INTEGER,
+    Valor DECIMAL(10, 2)
 );
 
 

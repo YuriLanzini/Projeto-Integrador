@@ -17,7 +17,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Carrinho = ({ cart, bebidas, clienteInfo, setCart, onClose, open }) => {
+const Carrinho = ({ cart, clienteInfo, setCart, onClose, open }) => {
   const [quantidades, setQuantidades] = useState(0);
   const navigate = useNavigate();
   const [openMessage, setOpenMessage] = useState(false);
@@ -72,6 +72,10 @@ const Carrinho = ({ cart, bebidas, clienteInfo, setCart, onClose, open }) => {
     return total;
   };
 
+  function generateRandomID() {
+    return Math.floor(Math.random() * 1000000);
+  }
+
   const IrPedido = async () => {
     if (cart.length === 0) {
       setMessageText("Carrinho está vazio.");
@@ -80,28 +84,20 @@ const Carrinho = ({ cart, bebidas, clienteInfo, setCart, onClose, open }) => {
       return;
     }
     try {
-      const pedidos = cart.map((item, index) => ({
+      const OrderID = generateRandomID();
+
+      const pedidos = await axios.post("http://localhost:3020/pedido", {
+        ID: OrderID,
         CPF: clienteInfo.cpf,
-        CodigoProduto: item.codigoproduto,
-        Valor: item.precovenda * (quantidades[index] || 1),
         Total: calcularTotal(),
         Finalizado: false,
-      }));
+      });
 
-      const inserirPedidos = await Promise.all(
-        pedidos.map(async (pedido) => {
-          const response = await axios.post(
-            "http://localhost:3020/pedido",
-            pedido
-          );
-          return response.data;
-        })
-      );
-
-      const ItensProdutos = inserirPedidos.map((pedido, index) => ({
-        PedidoID: pedido.id,
+      const ItensProdutos = cart.map((pedido, index) => ({
+        PedidoID: OrderID,
         CodigoProduto: pedido.codigoproduto,
         QuantidadeProdutos: quantidades[index] || 1,
+        Valor: pedido.precovenda * (quantidades[index] || 1),
       }));
 
       const insertedItensProdutos = await Promise.all(

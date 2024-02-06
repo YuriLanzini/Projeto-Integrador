@@ -256,7 +256,6 @@ const PedidosComponent = () => {
         <NotaFiscal
           onClose={closeNota}
           totalValor={TotalCompra()}
-          pedidoDetalhes={pedidos}
           clienteInfo={clienteInfo}
           metodoPagamento={metodoPagamento}
         />
