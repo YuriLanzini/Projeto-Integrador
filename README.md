@@ -13,11 +13,11 @@ Este repositório é dedicado ao Projeto Integrador e está organizado em pastas
 
 - **Engenharia**: 
   Arquivos:
-   -trabalho_integrador.pdf
+   -TestesEngenharia.pdf
    -trabalho_integrador_2.pdf
 
 - **Prog-II**: 
   Arquivos:
-   -Final
+   -final
 
 
